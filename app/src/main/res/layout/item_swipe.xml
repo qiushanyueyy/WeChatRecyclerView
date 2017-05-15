@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/item_margin">
+
+        <ImageView
+            android:layout_width="@dimen/item_height"
+            android:layout_height="@dimen/item_height"
+            android:src="@mipmap/ic_yurisa" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/item_margin"
+                android:layout_marginStart="@dimen/item_margin"
+                android:text="勐哥"
+                android:paddingBottom="@dimen/item_padding"
+                android:textColor="@color/name"
+                android:textSize="14sp" />
+
+            <com.yangy.wechatrecyclerview.view.ExpandTextView.ExpandTextView
+                android:id="@+id/tvContent"
+                android:layout_marginLeft="@dimen/item_margin"
+                android:layout_marginStart="@dimen/item_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:showLines="4"/>
+            <!-- 不同的地方 -->
+            <ViewStub
+                android:id="@+id/viewStub"
+                android:layout_marginBottom="@dimen/item_padding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/item_margin"
+                android:paddingBottom="@dimen/item_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1小时前"
+                    android:textColor="@color/textColor4"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/snsBtn"
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@mipmap/im_snsimg" />
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/digCommentBody"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/item_margin"
+                android:minHeight="10dip"
+                android:paddingLeft="12dip"
+                android:paddingTop="12dip"
+                android:paddingRight="12dip"
+                android:paddingBottom="8dip"
+                android:background="@drawable/im_distribute_comm_bg"
+                android:orientation="vertical" >
+
+                <com.yangy.wechatrecyclerview.view.PraiseListView.PraiseListView
+                    android:id="@+id/praiseListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:lineSpacingMultiplier="1.1"
+                    android:textSize="14sp"
+                    android:textColor="@color/praise_item"
+                    app:item_color="@color/praise_item"
+                    />
+
+                <View
+                    android:id="@+id/lin_dig"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="@color/im_line_color"
+                    android:layout_marginTop="5dip"
+                    android:layout_marginBottom="5dip"
+                    />
+                <com.yangy.wechatrecyclerview.view.CommentListView.CommentListView
+                    android:id="@+id/commentList"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    app:item_color="@color/praise_item"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View style="@style/driver_h_1" />
+
+</LinearLayout>
