@@ -1,4 +1,4 @@
-package com.yangy.wechatrecyclerview.view.ColorFilterImageView;
+package com.yangy.wechatrecyclerview.view;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,12 +10,8 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 /**
- *
- * @ClassName: ColorFilterImageView
- * @Description: 实现图像根据按下抬起动作变化颜色
- * @author hnclca
- * @date 2016-02-26
- *
+ * 实现图像根据按下抬起动作变化颜色
+ * Created by yangy on 2017/05/12
  */
 public class ColorFilterImageView extends ImageView implements OnTouchListener {
     public ColorFilterImageView(Context context) {

@@ -1,13 +1,14 @@
 package com.yangy.wechatrecyclerview.bean;
 
 /**
- * Created by yangy on 2017/05/12 15:41
+ * 发布链接的内容
+ * Created by yangy on 2017/05/12
  */
 
 public class LinkBean {
-    private String linkUrl;
-    private String linkIcon;
-    private String linkContent;
+    private String linkUrl;//链接地址
+    private String linkIcon;//图标
+    private String linkContent;//文本内容
 
     public LinkBean(String linkUrl, String linkIcon, String linkContent) {
         this.linkUrl = linkUrl;

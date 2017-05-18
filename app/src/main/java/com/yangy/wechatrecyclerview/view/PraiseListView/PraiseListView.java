@@ -16,11 +16,13 @@ import com.yangy.wechatrecyclerview.MyApplication;
 import com.yangy.wechatrecyclerview.R;
 import com.yangy.wechatrecyclerview.bean.User;
 import com.yangy.wechatrecyclerview.util.SpannableClickable;
+import com.yangy.wechatrecyclerview.view.CircleMovementMethod;
 
 import java.util.List;
 
 /**
- * Created by yiwei on 16/7/9.
+ * 点赞列表
+ * Created by yangy on 2017/05/12
  */
 public class PraiseListView extends TextView {
 
@@ -59,7 +61,7 @@ public class PraiseListView extends TextView {
             itemColor = typedArray.getColor(R.styleable.PraiseListView_item_color, getResources().getColor(R.color.praise_item_default));
             itemSelectorColor = typedArray.getColor(R.styleable.PraiseListView_item_selector_color, getResources().getColor(R.color.praise_item_selector_default));
 
-        }finally {
+        } finally {
             typedArray.recycle();
         }
     }
@@ -67,23 +69,24 @@ public class PraiseListView extends TextView {
     public List<User> getDatas() {
         return datas;
     }
+
     public void setDatas(List<User> datas) {
         this.datas = datas;
         notifyDataSetChanged();
     }
 
 
-    public void notifyDataSetChanged(){
+    public void notifyDataSetChanged() {
         SpannableStringBuilder builder = new SpannableStringBuilder();
-        if(datas != null && datas.size() > 0){
+        if (datas != null && datas.size() > 0) {
             //添加点赞图标
             builder.append(setImageSpan());
             User item = null;
-            for (int i=0; i<datas.size(); i++){
+            for (int i = 0; i < datas.size(); i++) {
                 item = datas.get(i);
-                if(item != null){
+                if (item != null) {
                     builder.append(setClickableSpan(item.getName(), i));
-                    if(i != datas.size()-1){
+                    if (i != datas.size() - 1) {
                         builder.append(", ");
                     }
                 }
@@ -95,21 +98,21 @@ public class PraiseListView extends TextView {
     }
 
 
-    private SpannableString setImageSpan(){
+    private SpannableString setImageSpan() {
         String text = "  ";
         SpannableString imgSpanText = new SpannableString(text);
         imgSpanText.setSpan(new ImageSpan(MyApplication.getContext(), R.mipmap.icon_praise, DynamicDrawableSpan.ALIGN_BASELINE),
-                0 , 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return imgSpanText;
     }
 
     @NonNull
     private SpannableString setClickableSpan(String textStr, final int position) {
         SpannableString subjectSpanText = new SpannableString(textStr);
-        subjectSpanText.setSpan(new SpannableClickable(itemColor){
+        subjectSpanText.setSpan(new SpannableClickable(itemColor) {
                                     @Override
                                     public void onClick(View widget) {
-                                        if(onItemClickListener!=null){
+                                        if (onItemClickListener != null) {
                                             onItemClickListener.onClick(position);
                                         }
                                     }
@@ -119,7 +122,7 @@ public class PraiseListView extends TextView {
     }
 
 
-    public static interface OnItemClickListener{
+    public static interface OnItemClickListener {
         public void onClick(int position);
     }
 }

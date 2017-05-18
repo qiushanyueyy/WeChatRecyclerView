@@ -8,7 +8,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
- * Created by yangy on 2016/5/17   10:34.
+ * Created by yangy on 2017/05/12
  */
 public class WebViewActivity extends AppCompatActivity {
     private String url;
@@ -45,17 +45,20 @@ public class WebViewActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onDestroy() {
         webView.destroy();
         super.onDestroy();
     }
+
     @Override
     protected void onPause() {
         // TODO Auto-generated method stub
         webView.pauseTimers();
         super.onPause();
     }
+
     @Override
     public void onResume() {
         webView.resumeTimers();

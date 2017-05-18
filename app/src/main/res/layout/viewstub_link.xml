@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/ll_link"
         android:layout_width="match_parent"
@@ -14,8 +15,7 @@
             android:id="@+id/iv_link"
             android:layout_width="@dimen/item_height"
             android:layout_height="@dimen/item_height"
-            android:padding="3dp"
-            android:src="@mipmap/ic_head_portrait" />
+            android:padding="3dp" />
 
         <TextView
             android:id="@+id/tv_link"
@@ -23,7 +23,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingLeft="@dimen/item_padding"
-            android:text="非常棒，谢谢，对于一个安卓小白很有用。。。"
             android:textColor="@color/content"
             android:textSize="13sp" />
     </LinearLayout>

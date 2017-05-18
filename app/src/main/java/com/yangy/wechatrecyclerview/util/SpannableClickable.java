@@ -8,9 +8,7 @@ import com.yangy.wechatrecyclerview.MyApplication;
 import com.yangy.wechatrecyclerview.R;
 
 /**
- * @author yiw
- * @Description:
- * @date 16/1/2 16:32
+ * Created by yangy on 2017/05/12
  */
 public abstract class SpannableClickable extends ClickableSpan implements View.OnClickListener {
 
@@ -18,13 +16,13 @@ public abstract class SpannableClickable extends ClickableSpan implements View.O
     /**
      * text颜色
      */
-    private int textColor ;
+    private int textColor;
 
     public SpannableClickable() {
         this.textColor = MyApplication.getContext().getResources().getColor(DEFAULT_COLOR_ID);
     }
 
-    public SpannableClickable(int textColor){
+    public SpannableClickable(int textColor) {
         this.textColor = textColor;
     }
 

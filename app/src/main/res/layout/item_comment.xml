@@ -2,10 +2,10 @@
     android:id="@+id/commentTv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="2dp"
+    android:lineSpacingMultiplier="1.1"
     android:paddingBottom="2dp"
     android:paddingLeft="3dp"
     android:paddingRight="3dp"
-    android:lineSpacingMultiplier="1.1"
+    android:paddingTop="2dp"
     android:textColor="#232323"
     android:textSize="14sp" />

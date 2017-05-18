@@ -1,35 +1,20 @@
-/*
- * Copyright 2016 Yan Zhenjie
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.yangy.wechatrecyclerview.bean;
 
 import java.util.List;
 
 /**
- * Created by Yan Zhenjie on 2016/8/25.
+ * 动态实体类
+ * Created by yangy on 2017/05/12
  */
-public class ViewTypeBean {
+public class CircleOfFriendsBean {
 
-    private String content;
-    private LinkBean linkBean;
-
-    private List<ImageInfo> imageList;
-    private List<User> userList;
-    private List<CommentItem> comments;
-
-    private int viewType;
+    private String content;//动态内容
+    private User user;//人员信息
+    private LinkBean linkBean;//链接详细信息
+    private List<ImageInfo> imageList;//图片集合
+    private List<User> userList;//点赞列表
+    private List<CommentItem> comments;//评论列表
+    private int viewType;//viewType  1.head  2.link  3.image
 
     public String getContent() {
         return content;
@@ -37,6 +22,14 @@ public class ViewTypeBean {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LinkBean getLinkBean() {

@@ -1,14 +1,16 @@
 package com.yangy.wechatrecyclerview.bean;
 
 /**
- * Created by yiwei on 16/3/2.
+ * 发表评论或者回复评论的人员信息
+ * Created by yangy on 2017/05/12
  */
 public class CommentConfig {
-    public static enum Type{
+    public static enum Type {
         PUBLIC("public"), REPLY("reply");
 
         private String value;
-        private Type(String value){
+
+        private Type(String value) {
             this.value = value;
         }
 
@@ -22,7 +24,7 @@ public class CommentConfig {
     @Override
     public String toString() {
         String replyUserStr = "";
-        if(replyUser != null){
+        if (replyUser != null) {
             replyUserStr = replyUser.toString();
         }
         return "circlePosition = " + circlePosition

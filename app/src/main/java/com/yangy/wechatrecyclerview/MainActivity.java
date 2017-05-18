@@ -1,27 +1,30 @@
 package com.yangy.wechatrecyclerview;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.Rect;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.ViewGroup;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.yangy.wechatrecyclerview.bean.CircleOfFriendsBean;
+import com.yangy.wechatrecyclerview.bean.CommentConfig;
+import com.yangy.wechatrecyclerview.bean.CommentItem;
 import com.yangy.wechatrecyclerview.bean.LinkBean;
-import com.yangy.wechatrecyclerview.bean.ImageInfo;
 import com.yangy.wechatrecyclerview.bean.User;
-import com.yangy.wechatrecyclerview.bean.ViewTypeBean;
+import com.yangy.wechatrecyclerview.util.CommonUtils;
 import com.yangy.wechatrecyclerview.util.DatasUtil;
-import com.yanzhenjie.recyclerview.swipe.Closeable;
-import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yangy.wechatrecyclerview.view.CommentListView.CommentListView;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import java.util.ArrayList;
@@ -29,14 +32,23 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    private Activity mContext;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinearLayoutManager layoutManager;
+    private LinearLayout edittextbody;
+    private EditText editText;
+    private ImageView sendIv;
+    private LinearLayout ll_title;
+    private int selectCircleItemH;
+    private int selectCommentItemOffset;
+    private int screenHeight;
+    private int editTextBodyHeight;
+    private int currentKeyboardH;
+    private int HEAD_HEIGHT = 600;//listview的headview高度
 
     private SwipeAdapter mSwipeAdapter;
 
-    private List<ViewTypeBean> mViewTypeBeanList;
+    private List<CircleOfFriendsBean> mCircleOfFriendsBeanList;
+    private CommentConfig mCommentConfig;
 
     private SwipeMenuRecyclerView mSwipeMenuRecyclerView;
 
@@ -47,32 +59,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mContext = this;
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 
         // 这里只是模拟数据，模拟Item的ViewType，根据ViewType决定显示什么菜单，到时候你可以根据你的数据来决定ViewType。
-        mViewTypeBeanList = new ArrayList<>();
+        mCircleOfFriendsBeanList = new ArrayList<>();
         addDataList(true);
 
         mSwipeMenuRecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.recycler_view);
-        mSwipeMenuRecyclerView.setLayoutManager(new LinearLayoutManager(this));// 布局管理器。
+        layoutManager = new LinearLayoutManager(this);
+        mSwipeMenuRecyclerView.setLayoutManager(layoutManager);// 布局管理器。
         mSwipeMenuRecyclerView.setHasFixedSize(true);// 如果Item够简单，高度是确定的，打开FixSize将提高性能。
         mSwipeMenuRecyclerView.setItemAnimator(new DefaultItemAnimator());// 设置Item默认动画，加也行，不加也行。
-//        mSwipeMenuRecyclerView.addItemDecoration(new ListViewDecoration(this));// 添加分割线。
-        // 添加滚动监听。
         mSwipeMenuRecyclerView.addOnScrollListener(mOnScrollListener);
 
-        // 为SwipeRecyclerView的Item创建菜单就两句话，不错就是这么简单：
-        // 设置菜单创建器。
-//        mSwipeMenuRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
-        // 设置菜单Item点击监听。
-//        mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
-
-        mSwipeAdapter = new SwipeAdapter(mViewTypeBeanList);
+        mSwipeAdapter = new SwipeAdapter(mCircleOfFriendsBeanList);
         mSwipeAdapter.setPresenterListener(presenterListener);
         mSwipeMenuRecyclerView.setAdapter(mSwipeAdapter);
+
+        edittextbody = (LinearLayout) findViewById(R.id.editTextBodyLl);
+        ll_title = (LinearLayout) findViewById(R.id.ll_title);
+        editText = (EditText) findViewById(R.id.circleEt);
+        sendIv = (ImageView) findViewById(R.id.sendIv);
+        sendIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (presenterListener != null) {
+                    //发布评论
+                    String content = editText.getText().toString().trim();
+                    if (TextUtils.isEmpty(content)) {
+                        Toast.makeText(MainActivity.this, "评论内容不能为空...", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    presenterListener.addComment(content, mCommentConfig);
+                }
+                presenterListener.showEditTextBody(View.GONE, null);
+            }
+        });
+        setViewTreeObserver();
     }
 
     private PresenterListener presenterListener = new PresenterListener() {
@@ -82,10 +106,11 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onLinkClick(int position) {
-            Intent intent = new Intent(MainActivity.this,WebViewActivity.class);
-            intent.putExtra("url",mViewTypeBeanList.get(position).getLinkBean().getLinkUrl());
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+            intent.putExtra("url", mCircleOfFriendsBeanList.get(position).getLinkBean().getLinkUrl());
             startActivity(intent);
         }
+
         /**
          * 点赞
          * @param position
@@ -93,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void updateAddFabulous(int position, User userItem) {
-            if (userItem != null){
-                mViewTypeBeanList.get(position).getUserList().add(userItem);
+            if (userItem != null) {
+                mCircleOfFriendsBeanList.get(position).getUserList().add(userItem);
                 mSwipeAdapter.notifyDataSetChanged();
             }
         }
@@ -106,15 +131,191 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void updateDeleteFabulous(int position, String id) {
-            for(int i=0; i<mViewTypeBeanList.get(position).getUserList().size(); i++){
-                if(id.equals(mViewTypeBeanList.get(position).getUserList().get(i).getId())){
-                    mViewTypeBeanList.get(position).getUserList().remove(i);
+            for (int i = 0; i < mCircleOfFriendsBeanList.get(position).getUserList().size(); i++) {
+                if (id.equals(mCircleOfFriendsBeanList.get(position).getUserList().get(i).getId())) {
+                    mCircleOfFriendsBeanList.get(position).getUserList().remove(i);
                     mSwipeAdapter.notifyDataSetChanged();
                     return;
                 }
             }
         }
+
+        /**
+         * 删除评论
+         * @param circlePosition 哪一条数据
+         * @param commentId 评论ID
+         */
+        @Override
+        public void deleteComment(int circlePosition, int commentPosition, String commentId) {
+            CommentItem item = mCircleOfFriendsBeanList.get(circlePosition).getComments().get(commentPosition);
+            if (commentId.equals(item.getId())) {
+                mCircleOfFriendsBeanList.get(circlePosition).getComments().remove(commentPosition);
+                mSwipeAdapter.notifyDataSetChanged();
+            }
+        }
+
+        /**
+         * 回复别人的评论
+         * @param commentConfig
+         */
+        @Override
+        public void showEditTextBody(int visibility, CommentConfig commentConfig) {
+            mCommentConfig = commentConfig;
+            edittextbody.setVisibility(visibility);
+
+            calculatedCircleItemAltitude(commentConfig);
+
+            if (View.VISIBLE == visibility) {
+                editText.requestFocus();
+                //弹出键盘
+                CommonUtils.showSoftInput(editText.getContext(), editText);
+            } else if (View.GONE == visibility) {
+                //隐藏键盘
+                CommonUtils.hideSoftInput(editText.getContext(), editText);
+            }
+        }
+
+        /**
+         * 增加评论
+         * @param content 评论内容
+         * @param config
+         */
+        @Override
+        public void addComment(String content, CommentConfig config) {
+            CommentItem newItem = null;
+            if (config.commentType == CommentConfig.Type.PUBLIC) {
+                newItem = DatasUtil.createPublicComment(content);
+            } else if (config.commentType == CommentConfig.Type.REPLY) {
+                newItem = DatasUtil.createReplyComment(config.replyUser, content);
+            }
+            if (newItem != null) {
+                mCircleOfFriendsBeanList.get(config.circlePosition).getComments().add(newItem);
+                mSwipeAdapter.notifyDataSetChanged();
+            }
+            //清空评论文本
+            editText.setText("");
+        }
+
+        /**
+         * 关闭输入框
+         */
+        @Override
+        public void closeInputBox() {
+            if (edittextbody.getVisibility() == View.VISIBLE) {
+                presenterListener.showEditTextBody(View.GONE, null);
+            }
+        }
     };
+
+    /**
+     * 获取评论高度
+     *
+     * @param commentConfig
+     */
+    private void calculatedCircleItemAltitude(CommentConfig commentConfig) {
+        if (commentConfig == null)
+            return;
+
+        int firstPosition = layoutManager.findFirstVisibleItemPosition();
+        //只能返回当前可见区域（列表可滚动）的子项
+        View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition - firstPosition);
+
+        if (selectCircleItem != null) {
+            selectCircleItemH = selectCircleItem.getHeight() - HEAD_HEIGHT;
+        }
+
+        if (commentConfig.commentType == CommentConfig.Type.REPLY) {
+            //回复评论的情况
+            CommentListView commentLv = (CommentListView) selectCircleItem.findViewById(R.id.commentList);
+            if (commentLv != null) {
+                //找到要回复的评论view,计算出该view距离所属动态底部的距离
+                View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
+                if (selectCommentItem != null) {
+                    //选择的commentItem距选择的CircleItem底部的距离
+                    selectCommentItemOffset = 0;
+                    View parentView = selectCommentItem;
+                    do {
+                        int subItemBottom = parentView.getBottom();
+                        parentView = (View) parentView.getParent();
+                        if (parentView != null) {
+                            selectCommentItemOffset += (parentView.getHeight() - subItemBottom);
+                        }
+                    } while (parentView != null && parentView != selectCircleItem);
+                }
+            }
+        }
+    }
+
+    private void setViewTreeObserver() {
+        final ViewTreeObserver swipeRefreshLayoutVTO = mSwipeRefreshLayout.getViewTreeObserver();
+        swipeRefreshLayoutVTO.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                Rect r = new Rect();
+                mSwipeRefreshLayout.getWindowVisibleDisplayFrame(r);
+                int statusBarH = getStatusBarHeight();//状态栏高度
+                int screenH = mSwipeRefreshLayout.getRootView().getHeight();
+                if (r.top != statusBarH) {
+                    //在这个demo中r.top代表的是状态栏高度，在沉浸式状态栏时r.top＝0，通过getStatusBarHeight获取状态栏高度
+                    r.top = statusBarH;
+                }
+                int keyboardH = screenH - (r.bottom - r.top);
+
+                if (keyboardH == currentKeyboardH) {//有变化时才处理，否则会陷入死循环
+                    return;
+                }
+
+                currentKeyboardH = keyboardH;
+                screenHeight = screenH;//应用屏幕的高度
+                editTextBodyHeight = editText.getHeight() + editText.getPaddingTop() + editText.getPaddingBottom();
+
+                if (keyboardH < 150) {//说明是隐藏键盘的情况
+                    presenterListener.showEditTextBody(View.GONE, null);
+                    return;
+                }
+                //偏移listview
+                if (layoutManager != null && mCommentConfig != null) {
+                    layoutManager.scrollToPositionWithOffset(mCommentConfig.circlePosition, getListviewOffset(mCommentConfig));
+                }
+            }
+        });
+    }
+
+    /**
+     * 测量偏移量
+     *
+     * @param commentConfig
+     * @return
+     */
+    private int getListviewOffset(CommentConfig commentConfig) {
+        if (commentConfig == null)
+            return 0;
+        //这里如果你的listview上面还有其它占高度的控件，则需要减去该控件高度。
+        int listviewOffset = screenHeight - selectCircleItemH - currentKeyboardH - editTextBodyHeight - ll_title.getHeight();
+//        int listviewOffset = screenHeight - selectCircleItemH - currentKeyboardH - editTextBodyHeight - titleBar.getHeight();
+        if (commentConfig.commentType == CommentConfig.Type.REPLY) {
+            //回复评论的情况
+            listviewOffset = listviewOffset + selectCommentItemOffset;
+        }
+        Log.i(MainActivity.class.getSimpleName(), "listviewOffset : " + listviewOffset);
+        return listviewOffset;
+    }
+
+    /**
+     * 获取状态栏高度
+     *
+     * @return
+     */
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     /**
      * 刷新监听。
      */
@@ -125,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     size = 50;
-                    mViewTypeBeanList.clear();
+                    mCircleOfFriendsBeanList.clear();
                     addDataList(true);
                     mSwipeAdapter.notifyDataSetChanged();
                     mSwipeRefreshLayout.setRefreshing(false);
@@ -151,140 +352,46 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    /**
-     * 菜单创建器。在Item要创建菜单的时候调用。
-     */
-    private SwipeMenuCreator swipeMenuCreator = new SwipeMenuCreator() {
-        @Override
-        public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
-            int width = getResources().getDimensionPixelSize(R.dimen.item_height);
-
-            // MATCH_PARENT 自适应高度，保持和内容一样高；也可以指定菜单具体高度，也可以用WRAP_CONTENT。
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-
-            // 添加左侧的，如果不添加，则左侧不会出现菜单。
-            {
-                SwipeMenuItem addItem = new SwipeMenuItem(mContext)
-                        .setBackgroundDrawable(R.drawable.selector_green)// 点击的背景。
-                        .setImage(R.mipmap.ic_action_add) // 图标。
-                        .setWidth(width) // 宽度。
-                        .setHeight(height); // 高度。
-                swipeLeftMenu.addMenuItem(addItem); // 添加一个按钮到左侧菜单。
-
-                SwipeMenuItem closeItem = new SwipeMenuItem(mContext)
-                        .setBackgroundDrawable(R.drawable.selector_red)
-                        .setImage(R.mipmap.ic_action_close)
-                        .setWidth(width)
-                        .setHeight(height);
-
-                swipeLeftMenu.addMenuItem(closeItem); // 添加一个按钮到左侧菜单。
-            }
-
-            // 添加右侧的，如果不添加，则右侧不会出现菜单。
-            {
-                SwipeMenuItem deleteItem = new SwipeMenuItem(mContext)
-                        .setBackgroundDrawable(R.drawable.selector_red)
-                        .setImage(R.mipmap.ic_action_delete)
-                        .setText("删除") // 文字，还可以设置文字颜色，大小等。。
-                        .setTextColor(Color.WHITE)
-                        .setWidth(width)
-                        .setHeight(height);
-                swipeRightMenu.addMenuItem(deleteItem);// 添加一个按钮到右侧侧菜单。
-
-                SwipeMenuItem closeItem = new SwipeMenuItem(mContext)
-                        .setBackgroundDrawable(R.drawable.selector_purple)
-                        .setImage(R.mipmap.ic_action_close)
-                        .setWidth(width)
-                        .setHeight(height);
-                swipeRightMenu.addMenuItem(closeItem); // 添加一个按钮到右侧菜单。
-
-                SwipeMenuItem addItem = new SwipeMenuItem(mContext)
-                        .setBackgroundDrawable(R.drawable.selector_green)
-                        .setText("添加")
-                        .setTextColor(Color.WHITE)
-                        .setWidth(width)
-                        .setHeight(height);
-                swipeRightMenu.addMenuItem(addItem); // 添加一个按钮到右侧菜单。
-            }
-        }
-    };
-
-    /**
-     * 菜单点击监听。
-     */
-    private OnSwipeMenuItemClickListener menuItemClickListener = new OnSwipeMenuItemClickListener() {
-        /**
-         * Item的菜单被点击的时候调用。
-         * @param closeable       closeable. 用来关闭菜单。
-         * @param adapterPosition adapterPosition. 这个菜单所在的item在Adapter中position。
-         * @param menuPosition    menuPosition. 这个菜单的position。比如你为某个Item创建了2个MenuItem，那么这个position可能是是 0、1，
-         * @param direction       如果是左侧菜单，值是：SwipeMenuRecyclerView#LEFT_DIRECTION，如果是右侧菜单，值是：SwipeMenuRecyclerView
-         *                        #RIGHT_DIRECTION.
-         */
-        @Override
-        public void onItemClick(Closeable closeable, int adapterPosition, int menuPosition, int direction) {
-            closeable.smoothCloseMenu();// 关闭被点击的菜单。
-
-            if (direction == SwipeMenuRecyclerView.RIGHT_DIRECTION) {
-                Toast.makeText(mContext, "list第" + adapterPosition + "; 右侧菜单第" + menuPosition, Toast.LENGTH_SHORT).show();
-            } else if (direction == SwipeMenuRecyclerView.LEFT_DIRECTION) {
-                Toast.makeText(mContext, "list第" + adapterPosition + "; 左侧菜单第" + menuPosition, Toast.LENGTH_SHORT).show();
-            }
-
-            // TODO 推荐调用Adapter.notifyItemRemoved(position)，也可以Adapter.notifyDataSetChanged();
-            if (menuPosition == 0) {// 删除按钮被点击。
-                mViewTypeBeanList.remove(adapterPosition);
-                mSwipeAdapter.notifyItemRemoved(adapterPosition);
-            }
-        }
-    };
-
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_all_activity, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == android.R.id.home) {
-//            finish();
-//        } else if (item.getItemId() == R.id.menu_open_rv_menu) {
-//            mSwipeMenuRecyclerView.smoothOpenRightMenu(0);
-//        }
-//        return true;
-//    }
-
-
 
     /**
      * 添加假数据
      *
      * @param top 第一次加载数据时加载头部
      */
+    int tag = 0;//随机添加数据
+
     private void addDataList(boolean top) {
         if (top) {
-            ViewTypeBean viewTypeBean = new ViewTypeBean();
-            viewTypeBean.setViewType(SwipeAdapter.TYPE_HEAD);
-            mViewTypeBeanList.add(viewTypeBean);
+            CircleOfFriendsBean circleOfFriendsBean = new CircleOfFriendsBean();
+            circleOfFriendsBean.setViewType(SwipeAdapter.TYPE_HEAD);
+            mCircleOfFriendsBeanList.add(circleOfFriendsBean);
         }
-        for (int i = size - 50, j = 0; i < size; i++, j++) {
-            ViewTypeBean viewTypeBean = new ViewTypeBean();
-            if (j == 0) {
-                int link = DatasUtil.getRandomNum(DatasUtil.linkIcon.length);
-                viewTypeBean.setViewType(SwipeAdapter.TYPE_LINK);
-                viewTypeBean.setContent(DatasUtil.CONTENTS[DatasUtil.getRandomNum(DatasUtil.CONTENTS.length)]);
-                viewTypeBean.setLinkBean(new LinkBean(DatasUtil.linkUrl[link],DatasUtil.linkIcon[link],DatasUtil.linkContent[link]));
-                viewTypeBean.setUserList(DatasUtil.users);
-                viewTypeBean.setComments(DatasUtil.createCommentItemList());
-            } else if (j == 1) {
-                viewTypeBean.setViewType(SwipeAdapter.TYPE_IMAGE);
-                viewTypeBean.setContent(DatasUtil.CONTENTS[DatasUtil.getRandomNum(DatasUtil.CONTENTS.length)]);
-                viewTypeBean.setImageList(DatasUtil.createImages());
-                viewTypeBean.setUserList(DatasUtil.users);
-                j = -1;
+
+        for (int i = size - 50; i < size; i++) {
+            CircleOfFriendsBean circleOfFriendsBean = new CircleOfFriendsBean();
+            tag = DatasUtil.getRandomNum(2);
+            switch (tag) {
+                case 0:
+                    int link = DatasUtil.getRandomNum(DatasUtil.linkIcon.length);
+                    circleOfFriendsBean.setViewType(SwipeAdapter.TYPE_LINK);
+                    circleOfFriendsBean.setContent(DatasUtil.CONTENTS[DatasUtil.getRandomNum(DatasUtil.CONTENTS.length)]);
+                    circleOfFriendsBean.setUser(DatasUtil.users.get(DatasUtil.getRandomNum(DatasUtil.users.size())));
+                    circleOfFriendsBean.setLinkBean(new LinkBean(DatasUtil.linkUrl[link], DatasUtil.linkIcon[link], DatasUtil.linkContent[link]));
+                    circleOfFriendsBean.setUserList(DatasUtil.users);
+                    circleOfFriendsBean.setComments(DatasUtil.createCommentItemList());
+                    break;
+                case 1:
+                    circleOfFriendsBean.setViewType(SwipeAdapter.TYPE_IMAGE);
+                    circleOfFriendsBean.setContent(DatasUtil.CONTENTS[DatasUtil.getRandomNum(DatasUtil.CONTENTS.length)]);
+                    circleOfFriendsBean.setUser(DatasUtil.users.get(DatasUtil.getRandomNum(DatasUtil.users.size())));
+                    circleOfFriendsBean.setImageList(DatasUtil.createImages());
+                    circleOfFriendsBean.setUserList(DatasUtil.users);
+                    circleOfFriendsBean.setComments(DatasUtil.createCommentItemList());
+                    break;
+                default:
+                    break;
             }
-            mViewTypeBeanList.add(viewTypeBean);
+            mCircleOfFriendsBeanList.add(circleOfFriendsBean);
         }
     }
 }

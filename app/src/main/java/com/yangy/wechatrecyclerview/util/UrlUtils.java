@@ -14,13 +14,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by suneee on 2016/6/2.
+ * 检索文本中的url和手机号码
+ * Created by yangy on 2017/05/12
  */
 public class UrlUtils {
-    public static SpannableStringBuilder formatUrlString(String contentStr){
+    public static SpannableStringBuilder formatUrlString(String contentStr) {
 
         SpannableStringBuilder sp;
-        if(!TextUtils.isEmpty(contentStr)){
+        if (!TextUtils.isEmpty(contentStr)) {
 
             sp = new SpannableStringBuilder(contentStr);
             try {
@@ -31,8 +32,8 @@ public class UrlUtils {
 
                 while (urlMatcher.find()) {
                     final String url = urlMatcher.group();
-                    if(!TextUtils.isEmpty(url)){
-                        sp.setSpan(new SpannableClickable(){
+                    if (!TextUtils.isEmpty(url)) {
+                        sp.setSpan(new SpannableClickable() {
                             @Override
                             public void onClick(View widget) {
                                 Context context = widget.getContext();
@@ -42,8 +43,8 @@ public class UrlUtils {
 //                                intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
 //                                context.startActivity(intent);
                                 /**使用自定义的WebView显示*/
-                                Intent intent = new Intent(context,WebViewActivity.class);
-                                intent.putExtra("url",url);
+                                Intent intent = new Intent(context, WebViewActivity.class);
+                                intent.putExtra("url", url);
                                 context.startActivity(intent);
                             }
                         }, urlMatcher.start(), urlMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -55,23 +56,23 @@ public class UrlUtils {
                 Matcher phoneMatcher = phonePattern.matcher(contentStr);
                 while (phoneMatcher.find()) {
                     final String phone = phoneMatcher.group();
-                    if(!TextUtils.isEmpty(phone)){
-                        sp.setSpan(new SpannableClickable(){
+                    if (!TextUtils.isEmpty(phone)) {
+                        sp.setSpan(new SpannableClickable() {
                             @Override
                             public void onClick(View widget) {
                                 Context context = widget.getContext();
                                 //用intent启动拨打电话
-                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+phone));
+                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 context.startActivity(intent);
                             }
                         }, phoneMatcher.start(), phoneMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             sp = new SpannableStringBuilder();
         }
         return sp;

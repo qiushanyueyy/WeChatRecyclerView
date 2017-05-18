@@ -27,6 +27,13 @@
 
     <color name="driver_1">#dddddd</color>
 
+    <color name="title_bg">#373B3E</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="white_pressed">#FFCFCFCF</color>
+
+    <color name="alertdialog_line">#c6c6c6</color>
+    <color name="actionsheet_blue">#037BFF</color>
+    <color name="actionsheet_red">#FD4A2E</color>
+    <color name="actionsheet_gray">#8F8F8F</color>
 </resources>
