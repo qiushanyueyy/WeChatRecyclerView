@@ -1,7 +1,7 @@
 package com.yangy.wechatrecyclerview.bean;
 
 /**
- * 人员信息实体类
+ * 人员信息
  * Created by yangy on 2017/05/12
  */
 public class User {

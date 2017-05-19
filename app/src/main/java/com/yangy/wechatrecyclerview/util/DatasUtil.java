@@ -1,6 +1,7 @@
 package com.yangy.wechatrecyclerview.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.yangy.wechatrecyclerview.bean.CommentItem;
 import com.yangy.wechatrecyclerview.bean.ImageInfo;
@@ -99,7 +100,7 @@ public class DatasUtil {
      */
     public static List<ImageInfo> createImages() {
         List<ImageInfo> photos = new ArrayList<ImageInfo>();
-        int size = getRandomNum(image.length);
+        int size = getRandomNum(image.length+1);
         if (size > 0) {
             if (size > 9) {
                 size = 9;

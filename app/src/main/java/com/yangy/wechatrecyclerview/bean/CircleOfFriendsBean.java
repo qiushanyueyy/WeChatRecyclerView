@@ -3,7 +3,7 @@ package com.yangy.wechatrecyclerview.bean;
 import java.util.List;
 
 /**
- * 动态实体类
+ * 动态信息
  * Created by yangy on 2017/05/12
  */
 public class CircleOfFriendsBean {

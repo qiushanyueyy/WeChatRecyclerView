@@ -39,7 +39,7 @@ public class SaveImageUtils {
             super.handleMessage(msg);
             if (msg.what == 0) {
                 if (bitmapNet != null) {
-                    saveImageToGallery(bitmapNet, mContext);
+                    saveImageToGallery(bitmapNet);
                 }
             }
         }
@@ -71,8 +71,8 @@ public class SaveImageUtils {
                 ).show();
     }
 
-    //刷新系统图库
-    public static void saveImageToGallery(Bitmap bmp, Context mContext) {
+    //保存图片并刷新系统图库
+    public static void saveImageToGallery(Bitmap bmp) {
         // 首先保存图片
         File appDir = new File(Environment.getExternalStorageDirectory(), "WeChatRecyclerView/photo");
         if (!appDir.exists()) {
@@ -90,6 +90,7 @@ public class SaveImageUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //刷新系统图库
         String fileNameUri = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), bmp, "", "");
         String[] proj = {MediaStore.Images.Media.DATA};
         Cursor actualimagecursor = mContext.getContentResolver().query(Uri.parse(fileNameUri), proj, null, null, null);
@@ -97,6 +98,8 @@ public class SaveImageUtils {
         actualimagecursor.moveToFirst();
         String img_path = actualimagecursor.getString(actual_image_column_index);
         MediaScannerConnection.scanFile(mContext, new String[]{img_path}, null, null);
+        // 回收bitmap的内存
+        bitmapNet.recycle();
     }
 
     //将网络图片转换成Bitmap
