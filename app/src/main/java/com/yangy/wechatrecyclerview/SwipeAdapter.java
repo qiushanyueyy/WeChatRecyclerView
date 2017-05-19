@@ -288,7 +288,6 @@ public class SwipeAdapter extends SwipeMenuAdapter<SwipeAdapter.DefaultViewHolde
                     Glide.with(MyApplication.getContext()).load(bean.getLinkBean().getLinkIcon()).into(this.iv_link);
                 }
             } else if (bean.getImageList() != null) {/**图片**/
-                Log.e("size", "" + bean.getImageList().size());
                 this.subViw.setVisibility(View.VISIBLE);
                 this.multiImageView.setList(bean.getImageList());
                 this.multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {

@@ -18,10 +18,7 @@
         </activity>
 
         <!--WebViewActivity-->
-        <activity
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:name=".WebViewActivity"/>
+        <activity android:name=".WebViewActivity"/>
         <!--查看图片-->
         <activity android:name=".ImagePagerActivity"/>
 

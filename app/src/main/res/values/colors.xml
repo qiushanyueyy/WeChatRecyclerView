@@ -24,6 +24,8 @@
     <color name="color_38ADFF">#38ADFF</color>
     <color name="im_font_color_text_hint">#abb1b6</color>
     <color name="color_232323">#232323</color>
+    <color name="color_grey_888888">#888888</color>
+    <color name="grey_white">#F7F7F7</color>
 
     <color name="driver_1">#dddddd</color>
 
