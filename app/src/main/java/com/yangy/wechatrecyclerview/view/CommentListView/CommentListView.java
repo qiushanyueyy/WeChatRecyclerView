@@ -2,6 +2,7 @@ package com.yangy.wechatrecyclerview.view.CommentListView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -30,6 +31,7 @@ import java.util.List;
  * Created by yangy on 2017/05/12
  */
 public class CommentListView extends LinearLayout {
+    private int nameColor = Color.parseColor("#576B95");
     private int itemColor;
     private int itemSelectorColor;
     private OnItemClickListener onItemClickListener;
@@ -171,7 +173,7 @@ public class CommentListView extends LinearLayout {
     @NonNull
     private SpannableString setClickableSpan(final String textStr, final String id) {
         SpannableString subjectSpanText = new SpannableString(textStr);
-        subjectSpanText.setSpan(new SpannableClickable(itemColor) {
+        subjectSpanText.setSpan(new SpannableClickable(nameColor) {
                                     @Override
                                     public void onClick(View widget) {
                                         Toast.makeText(MyApplication.getContext(), textStr + " &id = " + id, Toast.LENGTH_SHORT).show();

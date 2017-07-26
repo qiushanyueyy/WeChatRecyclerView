@@ -43,9 +43,9 @@ public class DatasUtil {
             , "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494420146190&di=21a74f65f6016302f104a9101abf7a65&imgtype=jpg&src=http%3A%2F%2Fimg4.imgtn.bdimg.com%2Fit%2Fu%3D183831790%2C1047042445%26fm%3D214%26gp%3D0.jpg"
             , "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494420158124&di=0258e30485af657a1ba2ef6d74684bc4&imgtype=0&src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201510%2F03%2F20151003013149_ErJXW.jpeg"
             , "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494420166645&di=a525d48ffd612d6237d28a08565298f9&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fforum%2Fw%3D580%2Fsign%3D362d38e1dc2a283443a636036bb4c92e%2F2258cdc79f3df8dc8774a76dc511728b4610281c.jpg"
-            , "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1494420223781&di=8c09fba8635b18399809fe8fa731e901&imgtype=0&src=http%3A%2F%2Fimages.17173.com%2F2015%2Fnews%2F2015%2F04%2F06%2Fcb0406yrs08s.jpg"
+            , "http://upload.ldnews.cn/2016/0527/1464347280261.jpg"
             , "http://img3.duitang.com/uploads/item/201511/15/20151115091213_uPyWQ.jpeg"
-            , "http://i.38mhw.com/iww201609/70072.jpg"
+            , "http://img1.imgtn.bdimg.com/it/u=2830219948,2566768538&fm=214&gp=0.jpg"
             , "http://image.tianjimedia.com/uploadImages/2015/295/45/5W3IY0OD140F_iQnOgwZ_600.jpg"};
 
     public static List<User> users = new ArrayList<User>();
@@ -100,15 +100,17 @@ public class DatasUtil {
      */
     public static List<ImageInfo> createImages() {
         List<ImageInfo> photos = new ArrayList<ImageInfo>();
+        List<String> urls = new ArrayList<String>();
         int size = getRandomNum(image.length+1);
         if (size > 0) {
             if (size > 9) {
                 size = 9;
             }
             for (int i = 0; i < size; i++) {
-                ImageInfo photo = new ImageInfo(image[i]);
-                if (!photos.contains(photo)) {
+                ImageInfo photo = new ImageInfo(image[getRandomNum(size)]);
+                if (!urls.contains(photo.url)) {
                     photos.add(photo);
+                    urls.add(photo.url);
                 } else {
                     i--;
                 }

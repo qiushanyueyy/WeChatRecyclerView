@@ -2,11 +2,13 @@ package com.yangy.wechatrecyclerview.view.PraiseListView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.DynamicDrawableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.View;
@@ -26,7 +28,7 @@ import java.util.List;
  */
 public class PraiseListView extends TextView {
 
-
+    private int nameColor = Color.parseColor("#576B95");
     private int itemColor;
     private int itemSelectorColor;
     private List<User> datas;
@@ -77,6 +79,7 @@ public class PraiseListView extends TextView {
 
 
     public void notifyDataSetChanged() {
+        setTextColor(Color.BLACK);//设置默认的字体颜色
         SpannableStringBuilder builder = new SpannableStringBuilder();
         if (datas != null && datas.size() > 0) {
             //添加点赞图标
@@ -109,7 +112,7 @@ public class PraiseListView extends TextView {
     @NonNull
     private SpannableString setClickableSpan(String textStr, final int position) {
         SpannableString subjectSpanText = new SpannableString(textStr);
-        subjectSpanText.setSpan(new SpannableClickable(itemColor) {
+        subjectSpanText.setSpan(new SpannableClickable(nameColor) {
                                     @Override
                                     public void onClick(View widget) {
                                         if (onItemClickListener != null) {

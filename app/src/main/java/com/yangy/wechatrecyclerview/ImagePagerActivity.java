@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -28,6 +29,9 @@ import com.yangy.wechatrecyclerview.util.SaveImageUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * 查看图片的页面
@@ -127,7 +131,7 @@ public class ImagePagerActivity extends AppCompatActivity {
 
         private List<String> datas = new ArrayList<String>();
         private LayoutInflater inflater;
-        private Context context;
+        private ImagePagerActivity context;
         private ImageSize imageSize;
         private ImageView smallImageView = null;
 
@@ -140,7 +144,7 @@ public class ImagePagerActivity extends AppCompatActivity {
             this.imageSize = imageSize;
         }
 
-        public ImageAdapter(Context context) {
+        public ImageAdapter(ImagePagerActivity context) {
             this.context = context;
             this.inflater = LayoutInflater.from(context);
         }
@@ -156,7 +160,7 @@ public class ImagePagerActivity extends AppCompatActivity {
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
             if (view != null) {
-                final ImageView imageView = (ImageView) view.findViewById(R.id.image);
+                final PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
                 if (imageSize != null) {
                     //预览imageView
                     smallImageView = new ImageView(context);
@@ -176,6 +180,17 @@ public class ImagePagerActivity extends AppCompatActivity {
                 ((FrameLayout) view).addView(loading);
 
                 final String imgurl = datas.get(position);
+                imageView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+                    @Override
+                    public void onPhotoTap(View view, float x, float y) {//点击图片
+                        context.finish();
+                    }
+
+                    @Override
+                    public void onOutsidePhotoTap() {//点击图片外面
+                        context.finish();
+                    }
+                });
                 /**长按保存图片到本地**/
                 imageView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
