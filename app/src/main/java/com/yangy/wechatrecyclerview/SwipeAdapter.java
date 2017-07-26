@@ -272,8 +272,7 @@ public class SwipeAdapter extends SwipeMenuAdapter<SwipeAdapter.DefaultViewHolde
             this.lin_dig.setVisibility(bean.getUserList() != null && bean.getUserList().size() != 0 && bean.getComments() != null
                     && bean.getComments().size() != 0 ? View.VISIBLE : View.GONE);//如果点赞和评论有一项没有数据就隐藏分割线
             if (!TextUtils.isEmpty(bean.getContent())) {
-                this.tvContent.setText(bean.getContent());
-//                this.tvContent.setText(UrlUtils.formatUrlString(bean.getContent()));
+                this.tvContent.setText(UrlUtils.formatUrlString(bean.getContent()));
             }
             this.tvContent.setVisibility(TextUtils.isEmpty(bean.getContent()) ? View.GONE : View.VISIBLE);
 
